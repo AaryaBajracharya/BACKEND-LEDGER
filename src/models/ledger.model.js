@@ -1,5 +1,5 @@
-import {Sequelize, Model ,DataTypes} from "sequelize";
-
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db.js';
 class Ledger extends Model{}
 
 Ledger.init({
@@ -16,7 +16,7 @@ Ledger.init({
             key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'PROTECT' // Prevents deleting an account if ledger history exists
+        onDelete: 'RESTRICT'
     },
     amount: {
         type: DataTypes.DECIMAL(12, 2), // Exact monetary precision
@@ -31,7 +31,7 @@ Ledger.init({
         allowNull: false,
     },
     idempotencyKey: {
-        type: DataTypes.UUID,
+        type: DataTypes.STRING,
         allowNull: false,
         unique: true, // Prevents duplicate request processing
     },
@@ -47,13 +47,14 @@ Ledger.init({
     underscored: true, // Enforces postgres-friendly snake_case (e.g., account_id)
 });
 
-const LegderModificationPRevention = () =>{
-    throw new Error("Ledger entries are immutable and cannot be modified or deleted")
+const ledgerModificationPrevention = () => {
+    throw new Error("Ledger entries are immutable and cannot be modified or deleted");
+};
 
-}
-Ledger.addHook('beforeUpdate', LedgerModificationPrevention);
-Ledger.addHook('beforeDestroy', LedgerModificationPrevention);
-Ledger.addHook('before')
+Ledger.addHook('beforeUpdate', ledgerModificationPrevention);
+Ledger.addHook('beforeDestroy', ledgerModificationPrevention);
+Ledger.addHook('beforeBulkUpdate', ledgerModificationPrevention);
+Ledger.addHook('beforeBulkDestroy', ledgerModificationPrevention);
+Ledger.addHook('beforeUpsert', ledgerModificationPrevention);
 
 export default Ledger;
-

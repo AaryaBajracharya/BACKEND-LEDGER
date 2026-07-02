@@ -1,7 +1,29 @@
 import { DataTypes, Model } from 'sequelize';
 import {sequelize} from '../config/db.js'; // Your Sequelize connection instance
 
-class Account extends Model {}
+class Account extends Model {
+
+  async getBalance(){
+
+    const {default :Ledger} =await import ('./Ledger.js');
+
+    const result = await Ledger.findOne({
+
+      where: { accountId: this.id },
+      attributes:[
+         [fn('SUM', literal(`CASE WHEN "type" = 'CREDIT' THEN "amount" ELSE 0 END`)), 'totalCredit'],
+        [fn('SUM', literal(`CASE WHEN "type" = 'DEBIT' THEN "amount" ELSE 0 END`)), 'totalDebit'],
+      ],
+      raw: true,
+    });
+
+    const totalCredit = Number(result?.totalCredit) || 0;
+    const totalDebit = Number(result?.totalDebit) || 0;
+
+    return totalCredit - totalDebit;
+
+  }
+}
 
 Account.init(
   {
@@ -12,10 +34,10 @@ Account.init(
     },
     // Assuming a relationship with a User model
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'Users', // Name of the target table
+        model: 'users', // Name of the target table
         key: 'id',
       },
       onDelete: 'CASCADE',
@@ -48,7 +70,7 @@ Account.init(
   {
     sequelize,
     modelName: 'Account',
-    tableName: 'Accounts',
+    tableName: 'accounts',
     timestamps: true, // Automatically handles createdAt and updatedAt
     indexes: [
       {
@@ -59,5 +81,7 @@ Account.init(
     ],
   }
 );
+
+
 
 export default Account;

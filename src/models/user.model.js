@@ -9,6 +9,11 @@ class User extends Model {
 }
 
 User.init({
+       id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+        },
     email: {
         type: DataTypes.STRING,
         unique: true,
@@ -38,13 +43,20 @@ User.init({
                 msg: 'Password must be at least 6 characters'
             }
         }
+    },
+
+    systemUser: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+
     }
 }, {
     sequelize,
     modelName: 'User',
+    tableName: 'users',
     timestamps: true,
     defaultScope: {
-        attributes: { exclude: ['password'] }  // hides password by default
+        attributes: {exclude: ['password', 'systemUser']  } // hides password by default
     },
     hooks: {
         beforeCreate: async (user) => {
@@ -56,6 +68,17 @@ User.init({
             }
         }
     }
+
 });
+
+const SystemUserModificationPrevention = (user) => {
+    if(user.systemUser){
+    throw new Error("System Users are immutable and cannot be modified or deleted");}
+};
+
+User.addHook('beforeUpdate',SystemUserModificationPrevention);
+User.addHook('beforeDestroy', SystemUserModificationPrevention);
+
+
 
 export default User;

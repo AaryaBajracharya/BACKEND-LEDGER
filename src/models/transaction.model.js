@@ -1,4 +1,6 @@
-import { Sequelize } from "sequelize";
+
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/db.js';
 
 class Transaction  extends Model{}
 
@@ -50,7 +52,7 @@ Transaction.init(
             allowNull: false,
         },
         status: {
-            type: DataTypes.ENUM('PENDING', 'COMPLETED', 'FAILED'),
+            type: DataTypes.ENUM('PENDING', 'COMPLETED', 'FAILED','REVERSED'),
             defaultValue: 'PENDING',
         },
         reference: {
@@ -59,13 +61,11 @@ Transaction.init(
         },
 
         idempotencyKey: {
-        type: DataTypes.UUID, // Or DataTypes.STRING if you generate unique tokens differently
+        type: DataTypes.STRING, // Or DataTypes.STRING if you generate unique tokens differently
         allowNull: false,
         unique: true, // Crucial: This prevents a duplicate request from inserting a new row
         }
     },
-
-    
 
     {
         sequelize,

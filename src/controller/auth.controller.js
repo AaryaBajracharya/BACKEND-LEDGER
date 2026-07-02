@@ -1,6 +1,7 @@
 import userModel from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import { sendRegistrationEmail } from '../services/email.service.js';
+import tokenBalcklistModel from '../models/tokenBlacklist.model.js';
 
 const JWT_OPTIONS = { expiresIn: '3d' };
 
@@ -106,4 +107,25 @@ const UserLogin = async (req, res) => {
     }
 };
 
-export { UserRegister, UserLogin };
+const UserLogout = async (req, res) => {
+    const token = req.cookies.jwt_token || req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {   
+        return res.status(400).json({
+            message: 'No token provided.',
+            status: 'failed',
+        });
+    }
+
+    res.clearCookie('jwt_token');
+
+    await tokenBalcklistModel.create({ token });
+
+    res.status(200).json({
+        message: 'User logged out successfully.',
+        status: 'success',
+    });
+}
+
+
+export { UserRegister, UserLogin, UserLogout };

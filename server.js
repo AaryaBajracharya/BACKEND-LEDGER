@@ -1,6 +1,7 @@
 import {sequelize, connectToDB} from './src/config/db.js'
 import app from './src/app.js';
 import express from 'express';
+import startBlacklistCleanupJob from './src/jobs/cleanupBlacklist.job.js';
 
 
 app.use(express.json());
@@ -23,3 +24,4 @@ async function startServer() {
 }
 
 startServer();
+startBlacklistCleanupJob();
