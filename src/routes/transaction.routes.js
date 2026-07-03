@@ -6,7 +6,7 @@ import { createTransaction, createInitialFundsTransaction } from '../controller/
 const router =express.Router();
 
 router.post("/",authMiddleware,createTransaction)
-router.post("/system/initial-funds",authSystemUserMiddleware,createInitialFundsTransaction,)
+router.post("/system/initial-funds",authSystemUserMiddleware,createInitialFundsTransaction)
 
 
 export default router;

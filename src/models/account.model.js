@@ -1,11 +1,11 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, fn, literal } from 'sequelize';
 import {sequelize} from '../config/db.js'; // Your Sequelize connection instance
 
 class Account extends Model {
 
   async getBalance(){
 
-    const {default :Ledger} =await import ('./Ledger.js');
+    const {default :Ledger} =await import ('./ledger.model.js');
 
     const result = await Ledger.findOne({
 

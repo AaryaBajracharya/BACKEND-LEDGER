@@ -1,7 +1,7 @@
 import userModel from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import { sendRegistrationEmail } from '../services/email.service.js';
-import tokenBalcklistModel from '../models/tokenBlacklist.model.js';
+import tokenBlacklistModel from '../models/blacklist.model.js';
 
 const JWT_OPTIONS = { expiresIn: '3d' };
 
@@ -119,7 +119,7 @@ const UserLogout = async (req, res) => {
 
     res.clearCookie('jwt_token');
 
-    await tokenBalcklistModel.create({ token });
+    await tokenBlacklistModel.create({ token });
 
     res.status(200).json({
         message: 'User logged out successfully.',

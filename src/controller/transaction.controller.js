@@ -57,6 +57,9 @@ const createTransaction = async (req, res) => {
         });
     }
 
+    const fromBalance = await fromUserAccount.getBalance();
+    const toBalance = await toUserAccount.getBalance();
+    
     try {
         const result = await sequelize.transaction(async (t) => {
             const transaction = await Transaction.create({
@@ -150,6 +153,7 @@ const createInitialFundsTransaction = async (req, res) => {
             message: "System account not found"
         });
     }
+
 
     try {
         const result = await sequelize.transaction(async (t) => {

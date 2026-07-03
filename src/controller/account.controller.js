@@ -17,7 +17,13 @@ const createAccountController = async (req, res) =>{
 
 const getUserAccountController =async (req,res) =>{
 
-    const account =await accountModel.find({userId :req.user.id})
+    const account =await accountModel.findAll({
+        where:{
+            userId :req.user.id}
+        })
+
+        res.status(200).json({
+        account})
 
 }
 

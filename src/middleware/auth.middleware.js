@@ -1,6 +1,6 @@
 import userModel from '../models/user.model.js';
 import jwt from  'jsonwebtoken';
-import tokenBalcklistModel from '../models/tokenBlacklist.model.js';
+import tokenBlacklistModel from '../models/blacklist.model.js';
 
 
 const authMiddleware = async (req, res ,next ) => {
@@ -16,7 +16,7 @@ const authMiddleware = async (req, res ,next ) => {
         })
     }
 
-    const isBlacklisted = await tokenBalcklistModel.findOne({where : {token}})
+    const isBlacklisted = await tokenBlacklistModel.findOne({where : {token}})
     if(isBlacklisted){
         return res.status(401).json({
             message:"Unauthorized Access, token is blacklisted"
@@ -47,7 +47,7 @@ const authSystemUserMiddleware = async(req, res, next ) => {
             message:"Unauthorized Access, token is missing"
         })
     }
-    const isBlacklisted = await tokenBalcklistModel.findOne({where : {token}})
+    const isBlacklisted = await tokenBlacklistModel.findOne({where : {token}})
 
     if(isBlacklisted){
         return res.status(401).json({
