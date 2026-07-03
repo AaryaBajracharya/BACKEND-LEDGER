@@ -12,6 +12,10 @@ blacklist.init({
     blacklistedAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+    },
+    expiresAt: {
+        type: DataTypes.DATE,
+        allowNull: true, // Optional field
     }
 }, 
 {

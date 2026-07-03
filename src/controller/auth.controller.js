@@ -42,7 +42,12 @@ const UserRegister = async (req, res) => {
         const user = await userModel.create({ email, password, name });
         const token = generateToken(user.id);
 
-        res.cookie('jwt_token', token);
+        res.cookie('jwt_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
+        });
 
         sendRegistrationEmail(user.email, user.name).catch(err =>
             console.error('Email failed:', err)
@@ -92,7 +97,12 @@ const UserLogin = async (req, res) => {
 
         const token = generateToken(user.id);
 
-        res.cookie('jwt_token', token);
+        res.cookie('jwt_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
+        });
 
         return res.status(200).json({
             user: buildUserPayload(user),
@@ -119,7 +129,20 @@ const UserLogout = async (req, res) => {
 
     res.clearCookie('jwt_token');
 
-    await tokenBlacklistModel.create({ token });
+    try {
+        const decoded = jwt.decode(token);
+
+        const expiresAt = decoded?.exp
+            ? new Date(decoded.exp * 1000) 
+            : new Date(Date.now() + JWT_MAX_AGE_MS);
+
+        await tokenBlacklistModel.create({ token, expiresAt });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Failed to blacklist token.',
+            status: 'failed',
+        });
+    }
 
     res.status(200).json({
         message: 'User logged out successfully.',
