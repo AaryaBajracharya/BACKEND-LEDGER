@@ -3,6 +3,7 @@ import { authMiddleware,authSystemUserMiddleware } from '../middleware/auth.midd
 import { createTransaction, createInitialFundsTransaction } from '../controller/transaction.controller.js';
 
 
+
 const router =express.Router();
 
 router.post("/",authMiddleware,createTransaction)

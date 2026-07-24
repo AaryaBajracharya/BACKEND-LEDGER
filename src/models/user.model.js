@@ -1,6 +1,18 @@
 import { DataTypes, Model } from 'sequelize';
 import bcrypt from 'bcryptjs';
-import {sequelize} from '../config/db.js'; 
+import {sequelize} from '../config/db.config.js'; 
+import { ForbiddenError } from '../errors/index.js';
+import {z} from "zod";
+
+
+const UserSchema =z.object({
+    email: z.string().email("Please provide a Valid Email address"),
+    name: z.string().min(3,"Name must be at least 3 characters"),
+    password: z.string({ required_error: "Password is required" }).min(6, "Password must be at least 6 characters"),
+    systemUser: z.boolean().optional()
+    
+}
+)
 
 class User extends Model {
     async comparePassword(password) {
@@ -73,12 +85,11 @@ User.init({
 
 const SystemUserModificationPrevention = (user) => {
     if(user.systemUser){
-    throw new Error("System Users are immutable and cannot be modified or deleted");}
+    throw new ForbiddenError("System Users are immutable and cannot be modified or deleted");}
 };
 
 User.addHook('beforeUpdate',SystemUserModificationPrevention);
 User.addHook('beforeDestroy', SystemUserModificationPrevention);
 
 
-
-export default User;
+export { UserSchema, User };

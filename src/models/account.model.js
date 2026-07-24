@@ -1,5 +1,5 @@
 import { DataTypes, Model, fn, literal } from 'sequelize';
-import {sequelize} from '../config/db.js'; // Your Sequelize connection instance
+import {sequelize} from '../config/db.config.js'; // Your Sequelize connection instance
 
 class Account extends Model {
 

@@ -1,6 +1,6 @@
 
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../config/db.js';
+import { sequelize } from '../config/db.config.js';
 
 class Transaction  extends Model{}
 
@@ -16,7 +16,7 @@ Transaction.init(
 
         fromAccountId:{
             type: DataTypes.UUID,
-            allowNUll: true,
+            allowNull: true,
             references: {
 
                 model: 'accounts',
@@ -24,7 +24,7 @@ Transaction.init(
 
             },
             onUpdate: 'CASCADE',
-            onDelete: 'SET NULL',
+            onDelete: 'RESTRICT',
         
         },
         
@@ -36,7 +36,7 @@ Transaction.init(
             key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'RESTRICT', // Prevent deletion if there are associated transactions
         },
 
         amount: {

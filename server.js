@@ -1,10 +1,8 @@
-import {sequelize, connectToDB} from './src/config/db.js'
+import {sequelize, connectToDB} from './src/config/db.config.js'
 import app from './src/app.js';
 import express from 'express';
-import startBlacklistCleanupJob from './src/jobs/cleanupBlacklist.job.js';
+//import startBlacklistCleanupJob from './src/jobs/cleanupBlacklist.job.js';
 
-
-app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
@@ -24,4 +22,4 @@ async function startServer() {
 }
 
 startServer();
-startBlacklistCleanupJob();
+//startBlacklistCleanupJob();

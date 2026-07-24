@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../config/db.js';
+import { sequelize } from '../config/db.config.js';
 class Ledger extends Model{}
 
 Ledger.init({

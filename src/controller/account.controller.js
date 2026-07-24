@@ -1,6 +1,8 @@
 import accountModel from '../models/account.model.js'
+import { catchAsync } from '../middleware/error.middleware.js'
+import { AppError, NotFoundError } from '../errors/index.js'
 
-const createAccountController = async (req, res) =>{
+const createAccountController = catchAsync(async (req, res) =>{
 
     const user  =req.user
     const account =await accountModel.create({
@@ -9,42 +11,44 @@ const createAccountController = async (req, res) =>{
     
     })
 
-    res.status(201).json({
+    res.status(AppError.CREATED).json({
         account
     })
 
-}
+});
 
-const getUserAccountController =async (req,res) =>{
+const getUserAccountController =catchAsync(async (req,res) =>{
 
     const account =await accountModel.findAll({
         where:{
             userId :req.user.id}
         })
 
-        res.status(200).json({
-        account})
+    if (!account){
+        throw new NotFoundError("Account not found")
+    }
 
-}
+    res.status(AppError.OK).json({
+    account})
 
-const getUserBalanceController = async (req,res) =>{
+});
+
+const getUserBalanceController = catchAsync(async (req,res) =>{
     const {accountId} =req.params
     const account = await accountModel.findOne({
         where : {id : accountId ,userId : req.user.id}
     })
 
     if (!account){
-        return res.status(404).json({
-            message: "Account not found"
-        })
+       throw new NotFoundError("Account not found")
     }
 
     const balance = await account.getBalance();
 
-    res.status(200).json({
+    res.status(AppError.OK).json({
         accountId: account.id,
         balance :balance
     })
 
-}
+});
 export {createAccountController,getUserAccountController,getUserBalanceController}
